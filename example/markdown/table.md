@@ -86,8 +86,6 @@ editor may automatically remove white space.
   - `+` \: Connect to upper cell
   - `-` \: End of header line
 
-!!! warning ~ 表記は List の表記とそろえたほうがいいかもしれない
-
 ### Sample
 
 ```

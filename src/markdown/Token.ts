@@ -7,8 +7,9 @@
 import { dump } from "./Dump.js";
 import type Book from "./Book.js";
 import type Page from "./Page.js";
+import Crc64 from "./lib/Crc64.js";
 //@ts-ignore
-import crc32 from "crc/crc32";
+//import crc32 from "crc/crc32";
 
 export default class Token {
   // クラス内のローカルなメンバ
@@ -137,14 +138,7 @@ export default class Token {
     return Token.getHeaderID(header);
   }
   static getHeaderID(header: string) {
-    let crc = crc32(header);
-    const chars = Token.base62;
-    let code = "";
-    while (crc > 0) {
-      code += chars[crc % chars.length];
-      crc = Math.floor(crc / chars.length);
-    }
-    return code;
+    return new Crc64(header).base62;
   }
 
   /**

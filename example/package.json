@@ -10,10 +10,8 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "@pintora/standalone": "^0.7.3",
     "express": "^4.19.2",
-    "fs": "^0.0.1-security",
-    "plantuml-encoder": "^1.4.0"
+    "fs": "^0.0.1-security"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

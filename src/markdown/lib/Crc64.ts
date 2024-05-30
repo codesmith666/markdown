@@ -1,4 +1,4 @@
-export default class CRC64 {
+export default class Crc64 {
   crc64: bigint = 0n;
   static table: bigint[][] = undefined!;
 
@@ -41,7 +41,7 @@ export default class CRC64 {
   }
 
   calc(string: string) {
-    CRC64.initialize();
+    Crc64.initialize();
 
     const utf8String = this.stringToUtf8(string);
     let bytes = this.stringToBytes(utf8String);
@@ -59,14 +59,14 @@ export default class CRC64 {
         (BigInt(bytes[7]) << 56n);
 
       crc =
-        CRC64.table[7][Number(crc & 0xffn)] ^
-        CRC64.table[6][Number((crc >> 8n) & 0xffn)] ^
-        CRC64.table[5][Number((crc >> 16n) & 0xffn)] ^
-        CRC64.table[4][Number((crc >> 24n) & 0xffn)] ^
-        CRC64.table[3][Number((crc >> 32n) & 0xffn)] ^
-        CRC64.table[2][Number((crc >> 40n) & 0xffn)] ^
-        CRC64.table[1][Number((crc >> 48n) & 0xffn)] ^
-        CRC64.table[0][Number(crc >> 56n)];
+        Crc64.table[7][Number(crc & 0xffn)] ^
+        Crc64.table[6][Number((crc >> 8n) & 0xffn)] ^
+        Crc64.table[5][Number((crc >> 16n) & 0xffn)] ^
+        Crc64.table[4][Number((crc >> 24n) & 0xffn)] ^
+        Crc64.table[3][Number((crc >> 32n) & 0xffn)] ^
+        Crc64.table[2][Number((crc >> 40n) & 0xffn)] ^
+        Crc64.table[1][Number((crc >> 48n) & 0xffn)] ^
+        Crc64.table[0][Number(crc >> 56n)];
 
       bytes = bytes.slice(8);
     }
@@ -74,7 +74,7 @@ export default class CRC64 {
     for (let i = 0; i < bytes.length; i++) {
       const lower = Number(crc & 0xffn);
       const index = lower ^ bytes[i];
-      crc = CRC64.table[0][index] ^ (crc >> 8n);
+      crc = Crc64.table[0][index] ^ (crc >> 8n);
     }
 
     crc = ~crc & 0xffffffffffffffffn;
@@ -83,13 +83,13 @@ export default class CRC64 {
   }
 
   static hex(source: string) {
-    return new CRC64(source).hex;
+    return new Crc64(source).hex;
   }
   static raw(source: string) {
-    return new CRC64(source).raw;
+    return new Crc64(source).raw;
   }
   static base62(source: string) {
-    return new CRC64(source).base62;
+    return new Crc64(source).base62;
   }
   // https://en.wikipedia.org/wiki/Cyclic_redundancy_check
   static initialize() {

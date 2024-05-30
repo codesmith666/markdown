@@ -15,6 +15,11 @@
 
 ## Sample
 
+- About css.nence
+  - see https://github.com/codesmith666/markdown/blob/main/example/css.nence.ts
+- About css.prism
+  - see https://github.com/codesmith666/markdown/blob/main/example/css.prism.ts
+
 ```typescript
 import express from "express";
 import { css_prism } from "./css.prism";

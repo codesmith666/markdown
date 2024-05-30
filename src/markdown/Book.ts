@@ -18,7 +18,6 @@ export default class Book {
     this.assoc = {};
     this.rootToken = undefined!;
     this.rootPath = rootPath.endsWith("/") ? rootPath : rootPath + "/";
-    console.log(this.rootPath);
   }
 
   /** ID採番 */
