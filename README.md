@@ -11,7 +11,21 @@
 
 ## Install
 
-`npm install @nence/markdown`
+```
+npm install @nence/markdown
+```
+
+## Run example
+
+- Download and extrace source
+  - https://github.com/codesmith666/markdown/archive/refs/heads/main.zip
+- Install the Dev Containers plugin in VSCode and open the directory.
+- Open a terminal in VSCode...
+  - npm install
+  - cd example
+  - npm install
+  - npm run dev
+  - Open localhost 8080 in a browser.
 
 ## Sample
 
@@ -73,3 +87,10 @@ app.listen(port, () => {
 ## Apply
 
 - If derived from the Book class, markdowns can be obtained from sources other than the file system.
+- You can see it in the MarkdownFS implementation.
+  - https://github.com/codesmith666/markdown/blob/main/src/markdown/MarkdownFS.ts
+
+## The comments in the source
+
+- The comments in the source are not yet fully written, and most are in Japanese.
+- Don't worry, I'll get it into English eventually(Use deepl).
