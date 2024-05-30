@@ -1,21 +1,3 @@
-# @nence/markdown
-
-- An easy-to-understand, straightforwardly implemented markdown renderer.
-
-## Feature
-
-- Support for diagrams such as mermaid, pintora, plantuml.
-- Support for import.
-- By customizeng the class, you can read markdown files from the database.
-- By customizing the class, the output of link and image tags can be changed.
-
-## Install
-
-`npm install @nence/markdown`
-
-## Sample
-
-```typescript
 import express from "express";
 import { css_prism } from "./css.prism";
 import { css_nence } from "./css.nence";
@@ -63,8 +45,3 @@ const port = 8080;
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
-```
-
-## Apply
-
-- If derived from the Book class, markdowns can be obtained from sources other than the file system.
