@@ -23,6 +23,7 @@ export type BookConfig = {
   onLinkHtml?: onLinkHtmlType;
   onImageHtml?: onImageHtmlType;
   onTokenized?: onTokenizedType;
+  dictionary?: { [key: string]: string };
 };
 
 /**
@@ -63,7 +64,6 @@ export default class Book {
 
   /** コンストラクタ */
   constructor(config: BookConfig) {
-    this.assoc = {};
     this.rootToken = undefined!;
     // rootPathの取得
     this.rootPath = config.rootPath;
@@ -73,6 +73,7 @@ export default class Book {
     this.onLinkHtml = config.onLinkHtml ?? this.onLinkHtml;
     this.onImageHtml = config.onImageHtml ?? this.onImageHtml;
     this.onTokenized = config.onTokenized ?? this.onTokenized;
+    this.assoc = config.dictionary ?? {};
   }
 
   /** ID採番 */
