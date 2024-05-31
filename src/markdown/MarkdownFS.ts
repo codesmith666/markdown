@@ -1,5 +1,5 @@
 import { brotliCompress } from "zlib";
-import Book from "./Book.js";
+import Book, { BookConfig } from "./Book.js";
 import fs from "fs";
 
 const noimagepng =
@@ -34,82 +34,81 @@ export default class MarkdownFS extends Book {
   };
   static re: RegExp = undefined!;
 
-  /**
-   * It is called by the library when a markdown document is needed.
-   *
-   * Return markdowns corresponding to DSNs.
-   * In this sample, it is obtained from the file system.
-   * Directory traversing is prevented here.
-   *
-   * @param dsn fullpath
-   * @returns
-   */
-  override async onLoad(dsn: string) {
-    // If dsn is undefined, return markdown for forbidden display
-    if (!dsn) dsn = this.rootPath + "forbidden";
+  constructor(rootPath: string) {
+    const config: BookConfig = {
+      rootPath,
+      /**
+       * It is called by the library when a markdown document is needed.
+       * @param dsn markdown filename (fullpath = Abdolute Path)
+       * @returns
+       */
+      onLoad: async (dsn: string) => {
+        // If dsn is undefined, return markdown for forbidden display
+        if (!dsn) dsn = this.rootPath + "forbidden";
 
-    // loading markdown file corresponding of dsn.
-    try {
-      if (!dsn.endsWith(".md")) dsn += ".md";
-      return { path: dsn, markdown: fs.readFileSync(dsn).toString() };
-    } catch (e) {
-      return { path: dsn, markdown: `${dsn} - not found.` };
-    }
-  }
+        // loading markdown file corresponding of dsn.
+        try {
+          if (!dsn.endsWith(".md")) dsn += ".md";
+          return { path: dsn, markdown: fs.readFileSync(dsn).toString() };
+        } catch (e) {
+          return { path: dsn, markdown: `${dsn} - not found.` };
+        }
+      },
+      /**
+       * Set this function if you want customize link html.
+       *
+       * @param dsn markdown filename (Relative Path from this.rootPath)
+       * @param label label of link
+       * @returns
+       */
+      onLinkHtml: (dsn: string, label: string) => {
+        if (!dsn) dsn = "/forbidden";
+        const md = encodeURIComponent(dsn);
+        return `<a class="anchor" href="?md=${dsn}">${label}</a>`;
+      },
+      /**
+       * Set this function if you want customize imae html.
+       *
+       * @param dsn Absolute path of image source.
+       * @param width
+       * @param height
+       * @param align
+       * @param href
+       * @returns
+       */
+      onImageHtml: (
+        dsn: string,
+        width: string = "",
+        height: string = "",
+        align: string = "",
+        href: string = ""
+      ) => {
+        // forbiddenならnoimage
+        if (!dsn) dsn = this.rootPath + "img/noimage.jpg";
 
-  /**
-   * Rendering document links to html.
-   * AbsoluteDsn is the complete path including the document root.
-   *
-   * @param dsn document path
-   * @param label
-   * @returns
-   */
-  //
-  //
-  override onLinkHtml(dsn: string, label: string) {
-    if (!dsn) dsn = "/forbidden";
-    const md = encodeURIComponent(dsn);
-    return `<a class="anchor" href="?md=${dsn}">${label}</a>`;
-  }
-
-  /**
-   *
-   * @param dsn
-   * @param width
-   * @param height
-   * @param align
-   * @param href
-   * @returns
-   */
-  override onImageHtml(
-    dsn: string,
-    width: string = "",
-    height: string = "",
-    align: string = "",
-    href: string = ""
-  ) {
-    // forbiddenならnoimage
-    if (!dsn) dsn = this.rootPath + "img/noimage.jpg";
-
-    // 拡張子からマイムタイプを検出する準備
-    if (!MarkdownFS.re) {
-      const re = "\\.(" + Object.keys(MarkdownFS.exts).join("|") + ")$";
-      MarkdownFS.re = new RegExp(re);
-    }
-    const matches = dsn.match(MarkdownFS.re);
-    if (matches) {
-      const m = MarkdownFS.exts[matches[1] as keyof typeof MarkdownFS.exts];
-      try {
-        const img = fs.readFileSync(dsn).toString("base64");
-        const w = width ? `width="${width}"` : "";
-        const h = height ? `height="${height}"` : "";
-        const i = `<img src="data:${m};base64,${img}" ${w} ${h}/>`;
-        const l = href ? `<a class="anchor" href="${href}">${i}</a>` : i;
-        const a = align ? `<div style="text-align:${align};">${l}</div>` : l;
-        return a;
-      } catch (e) {}
-    }
-    return `<img src="data:image/png;base64,${noimagepng}"/>`;
+        // 拡張子からマイムタイプを検出する準備
+        if (!MarkdownFS.re) {
+          const re = "\\.(" + Object.keys(MarkdownFS.exts).join("|") + ")$";
+          MarkdownFS.re = new RegExp(re);
+        }
+        const matches = dsn.match(MarkdownFS.re);
+        if (matches) {
+          const m = MarkdownFS.exts[matches[1] as keyof typeof MarkdownFS.exts];
+          try {
+            const img = fs.readFileSync(dsn).toString("base64");
+            const w = width ? `width="${width}"` : "";
+            const h = height ? `height="${height}"` : "";
+            const i = `<img src="data:${m};base64,${img}" ${w} ${h}/>`;
+            const l = href ? `<a class="anchor" href="${href}">${i}</a>` : i;
+            const a = align
+              ? `<div style="text-align:${align};">${l}</div>`
+              : l;
+            return a;
+          } catch (e) {}
+        }
+        return `<img src="data:image/png;base64,${noimagepng}"/>`;
+      },
+    };
+    super(config);
   }
 }

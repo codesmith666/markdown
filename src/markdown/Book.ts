@@ -3,7 +3,31 @@ import Token from "./Token.js";
 import RootToken from "./token/RootToken.js";
 import HeaderToken from "./token/HeaderToken.js";
 
-/** markdown2htmlの本体 */
+type onLoadType = (dsn: string) => Promise<{ path: string; markdown: string }>;
+type onLinkHtmlType = (dsn: string, label: string) => string;
+type onImageHtmlType = (
+  path: string,
+  width?: string,
+  height?: string,
+  align?: string,
+  href?: string
+) => string;
+type onTokenizedType = (token: Token) => void;
+
+/**
+ * BookConfig
+ */
+export type BookConfig = {
+  rootPath: string;
+  onLoad?: onLoadType;
+  onLinkHtml?: onLinkHtmlType;
+  onImageHtml?: onImageHtmlType;
+  onTokenized?: onTokenizedType;
+};
+
+/**
+ * Markdown re
+ */
 export default class Book {
   //protected resolver: Resolver;
   protected assoc: { [key: string]: string };
@@ -13,11 +37,42 @@ export default class Book {
   protected pageID: number = 0;
   protected tokenID: number = 0;
   protected chunkID: number = 0;
+
+  onLoad: onLoadType = async (dsn: string) => {
+    return { path: "", markdown: "override Book::onLoad()." };
+  };
+  onLinkHtml: onLinkHtmlType = (dsn: string, label: string) => {
+    const d = encodeURIComponent(dsn);
+    return `<a class="anchor" href="?dsn=${d}">${label}</a> `;
+  };
+  onImageHtml: onImageHtmlType = (
+    path: string,
+    width?: string,
+    height?: string,
+    align?: string,
+    href?: string
+  ) => {
+    const w = width ? `width="${width}"` : "";
+    const h = height ? `height="${height}"` : "";
+    const i = `<img src="${path}" ${w} ${h}/>`;
+    const l = href ? `<a class="anchor" href="${href}">${i}</a>` : i;
+    const a = align ? `<div style="text-align:${align};">${l}</div>` : l;
+    return a;
+  };
+  onTokenized = (token: Token) => {};
+
   /** コンストラクタ */
-  constructor(rootPath: string) {
+  constructor(config: BookConfig) {
     this.assoc = {};
     this.rootToken = undefined!;
-    this.rootPath = rootPath.endsWith("/") ? rootPath : rootPath + "/";
+    // rootPathの取得
+    this.rootPath = config.rootPath;
+    if (!this.rootPath.endsWith("/")) this.rootPath += "/";
+    // 各種イベントハンドラ
+    this.onLoad = config.onLoad ?? this.onLoad;
+    this.onLinkHtml = config.onLinkHtml ?? this.onLinkHtml;
+    this.onImageHtml = config.onImageHtml ?? this.onImageHtml;
+    this.onTokenized = config.onTokenized ?? this.onTokenized;
   }
 
   /** ID採番 */
@@ -61,7 +116,7 @@ export default class Book {
     }
 
     // 短いパスを返すか完全なパスを返すか
-    const p = wantShortPath ? path.slice(this.rootPath.length) : path;
+    const p = wantShortPath ? path.slice(this.rootPath.length - 1) : path;
 
     return p === "/" ? "" : p;
   }
@@ -115,30 +170,6 @@ export default class Book {
     listing(0, get(ite));
 
     return `<div style="font-size:10pt;">${html}</div>`;
-  }
-
-  /** 旧resolver */
-  async onLoad(dsn: string) {
-    return { path: "", markdown: "override Book::onLoad()." };
-  }
-
-  onLinkHtml(dsn: string, label: string) {
-    const d = encodeURIComponent(dsn);
-    return `<a class="anchor" href="/dsn-${d}">${label}</a> `;
-  }
-
-  onImageHtml(
-    path: string,
-    width: string = "",
-    height: string = "",
-    align: string = "",
-    href: string = ""
-  ) {
-    return `<img src="${path}"/> `;
-  }
-
-  onTokenized(token: Token) {
-    return;
   }
 
   promises: Promise<void>[] = [];
