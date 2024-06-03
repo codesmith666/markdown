@@ -1,6 +1,6 @@
 # @nence/markdown
 
-- An easy-to-understand, straightforwardly implemented markdown renderer.
+- Simple implementation markdown renderer.
 
 ## Feature
 
@@ -93,4 +93,4 @@ app.listen(port, () => {
 ## The comments in the source
 
 - The comments in the source are not yet fully written, and most are in Japanese.
-- Don't worry, I'll get it into English eventually(Use deepl).
+- I'll get it into English eventually(Use deepl).

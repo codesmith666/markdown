@@ -1,7 +1,7 @@
 {
   "name": "@nence/markdown",
-  "version": "0.2.6",
-  "description": "Implementation of server side markdown renderer with pintora.",
+  "version": "1.0.0",
+  "description": "Simple implementation markdown renderer.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
